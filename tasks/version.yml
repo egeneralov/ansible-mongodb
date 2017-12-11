@@ -1,0 +1,12 @@
+---
+
+- name: Get server version info
+  shell: mongod --version | grep db
+  register: version_server
+
+- name: Get client version info
+  shell: mongo --version | grep shell
+  register: version_client
+
+- debug:
+    var: version_server.stdout, version_client.stdout

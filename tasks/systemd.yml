@@ -1,0 +1,13 @@
+---
+
+- name: Restart mongod
+  systemd:
+    name: mongod
+    state: restarted
+    daemon-reload: yes
+  when: installation.changed
+
+- name: Wait for mongodb starting
+  wait_for:
+    port: 27017
+    delay: 5

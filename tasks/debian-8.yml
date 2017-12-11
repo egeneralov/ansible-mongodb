@@ -1,0 +1,43 @@
+---
+
+- name: Install apt dependency for key managment
+  apt:
+    name: gnupg2
+    state: installed
+    update_cache: yes
+    cache_valid_time: 9200
+
+- name: Get mongodb repository keys
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: "{{ item }}"
+  register: keyring
+  with_items:
+    - 91FA4AD5
+
+- name: Write apt repository
+  apt_repository:
+    repo: "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/{{ item }} main"
+    state: present
+    filename: "mongodb-org-{{ item }}"
+  register: repository
+  with_items:
+    - 3.6
+
+- name: Install latest mongodb
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: latest
+  with_items:
+    - mongodb-org
+    - mongodb-org-server
+    - mongodb-org-shell
+    - mongodb-org-mongos
+    - mongodb-org-tools
+  register: installation
+
+- include_tasks: "{{ item }}"
+  with_items:
+   - systemd.yml
+   - version.yml

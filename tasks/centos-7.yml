@@ -1,0 +1,30 @@
+---
+
+- name: Add mongodb repo
+  yum_repository:
+    name: "mongodb-org-{{ item }}"
+    description: MongoDB Repository
+    file: "mongodb-org-{{ item }}"
+    baseurl: "https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/{{ item }}/x86_64/"
+    gpgkey: "https://www.mongodb.org/static/pgp/server-{{ item }}.asc"
+    gpgcheck: yes
+    enabled: yes
+  with_items:
+    - 3.6
+
+- name: Install the latest version of mongodb 
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - mongodb-org-3.6.0
+    - mongodb-org-server-3.6.0
+    - mongodb-org-shell-3.6.0
+    - mongodb-org-mongos-3.6.0
+    - mongodb-org-tools-3.6.0
+  register: installation
+
+- include_tasks: "{{ item }}"
+  with_items:
+   - systemd.yml
+   - version.yml
